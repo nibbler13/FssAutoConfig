@@ -38,10 +38,10 @@ namespace FssAutoConfig {
 		private const string KEY_CERIFICATES_SIGNOUTMESSAGE = "Подписывать исходящие сообщения";
 		private const string KEY_CERIFICATES_VERIFYMESSAGE = "Проверять подпись на входящих сообщениях";
 		private const string KEY_CERIFICATES_HPROV = "Криптопровайдер";
-		private const string KEY_CERIFICATES_KEYWSCONTAINER = "Тип контейнера";
+		private const string KEY_CERIFICATES_KEYWSCONTAINER = "Тип контейнера личный";
 		private const string KEY_CERIFICATES_CERTWSNAME = "Имя сертификата МО";
 		private const string KEY_CERIFICATES_ENCRYPTMESSAGES = "Шифровать сообщение";
-		private const string KEY_CERIFICATES_FSSKEYWSCONTAINER = "Тип контейнера";
+		private const string KEY_CERIFICATES_FSSKEYWSCONTAINER = "Тип контейнера фсс";
 		private const string KEY_CERIFICATES_CERTFSSNAME = "Имя сертификата ФСС";
 
 		public Dictionary<string, string> Settings { get; private set; }
