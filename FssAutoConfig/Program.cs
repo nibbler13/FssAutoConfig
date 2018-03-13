@@ -19,6 +19,7 @@ namespace FssAutoConfig {
 
 			SettingsReader settingsReader = new SettingsReader();
 			SettingsWriter.WriteSettings(settingsReader, FSS_CONFIG_FILE);
+			CryptoProCspLicense.InstallLicense();
 
 			LoggingService.LogMessageToFile("Работа программы завершена");
 		}

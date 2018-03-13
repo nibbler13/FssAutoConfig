@@ -92,5 +92,20 @@ namespace FssAutoConfig {
 				capacity = capacity * 2;
 			}
 		}
+
+		public static bool WriteValue(string section, string key, string value, string filePath) {
+			bool result = WritePrivateProfileString(section, key, value, filePath);
+			return result;
+		}
+
+		public static bool DeleteSection(string section, string filepath) {
+			bool result = WritePrivateProfileString(section, null, null, filepath);
+			return result;
+		}
+
+		public static bool DeleteKey(string section, string key, string filepath) {
+			bool result = WritePrivateProfileString(section, key, null, filepath);
+			return result;
+		}
 	}
 }
