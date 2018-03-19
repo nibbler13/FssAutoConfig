@@ -6,9 +6,9 @@ using System.Text;
 
 namespace FssAutoConfig {
 	public class SettingsReader {
-		private const string FILE_SETTINGS_GENERAL = @"\\budzdorov.ru\NETLOGON\FSS_ARM_LPU\GeneralSettings.ini";
-		private const string FILE_SETTINGS_DEPARTMENTS = @"\\budzdorov.ru\NETLOGON\FSS_ARM_LPU\DepartmentsSettings.ini";
-		private const string FILE_USER_CERTIFICATES = @"\\budzdorov.ru\NETLOGON\FSS_ARM_LPU\UserCertificates.ini";
+		private const string FILE_SETTINGS_GENERAL = @"\\mscs-fs-01\FSS_ARM_LPU\GeneralSettings.ini";
+		private const string FILE_SETTINGS_DEPARTMENTS = @"\\mscs-fs-01\FSS_ARM_LPU\DepartmentsSettings.ini";
+		private const string FILE_USER_CERTIFICATES = @"\\mscs-fs-01\FSS_ARM_LPU\UserCertificates.ini";
 
 		private const string SECTION_REQUISITES = "Настройка реквизитов организации";
 		private const string SECTION_FSS_SERVICES = "Настройка сервисов ФСС";

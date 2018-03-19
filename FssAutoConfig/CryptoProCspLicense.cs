@@ -7,8 +7,8 @@ using System.Text;
 
 namespace FssAutoConfig {
 	class CryptoProCspLicense {
-		private const string MACHINES_TO_RUN = @"\\mskv-dc\NETLOGON\FSS_ARM_LPU\MachinesWithoutCryptoProCspLicense.txt";
-		private const string CRYPTOPRO_LICENSES = @"\\mskv-dc\NETLOGON\FSS_ARM_LPU\CryptoProCspLicenses.ini";
+		private const string MACHINES_TO_RUN = @"\\mscs-fs-01\FSS_ARM_LPU\MachinesWithoutCryptoProCspLicense.txt";
+		private const string CRYPTOPRO_LICENSES = @"\\mscs-fs-01\FSS_ARM_LPU\CryptoProCspLicenses.ini";
 
 		public static void InstallLicense() {
 			LoggingService.LogMessageToFile("Установка лицензии для CryptoProCsp");

@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion.cs" />
-    <Compile Include="CryptoProCspLisence.cs" />
+    <Compile Include="CryptoProCspLicense.cs" />
     <Compile Include="DirectoryService.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="LoggingService.cs" />
