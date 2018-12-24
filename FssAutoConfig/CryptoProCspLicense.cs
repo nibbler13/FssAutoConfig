@@ -7,29 +7,29 @@ using System.Text;
 
 namespace FssAutoConfig {
 	class CryptoProCspLicense {
-		private const string MACHINES_TO_RUN = @"\\mscs-fs-01\FSS_ARM_LPU\MachinesWithoutCryptoProCspLicense.txt";
-		private const string CRYPTOPRO_LICENSES = @"\\mscs-fs-01\FSS_ARM_LPU\CryptoProCspLicenses.ini";
+		private static readonly string fileMachinesToRun = Path.Combine(Program.rootFolder, "MachinesWithoutCryptoProCspLicense.txt");
+		private static readonly string fileCryptoproLicenses = Path.Combine(Program.rootFolder, "CryptoProCspLicenses.ini");
 
 		public static void InstallLicense() {
 			LoggingService.LogMessageToFile("Установка лицензии для CryptoProCsp");
 
 			try {
-				foreach (string item in new string[] { MACHINES_TO_RUN, CRYPTOPRO_LICENSES })
+				foreach (string item in new string[] { fileMachinesToRun, fileCryptoproLicenses })
 					if (!File.Exists(item)) {
 						LoggingService.LogMessageToFile("Не удается найти файл: " + item);
 						return;
 					}
 
-				LoggingService.LogMessageToFile("Считывание списка систем для применения: " + MACHINES_TO_RUN);
-				string[] machinesToRun = File.ReadAllLines(MACHINES_TO_RUN);
+				LoggingService.LogMessageToFile("Считывание списка систем для применения: " + fileMachinesToRun);
+				string[] machinesToRun = File.ReadAllLines(fileMachinesToRun);
 				string machineName = Environment.MachineName.ToUpper();
 				if (!machinesToRun.Contains(machineName)) {
 					LoggingService.LogMessageToFile("Данная система отсутствует в списке на установку лицензии CryptoProCsp");
 					return;
 				}
 
-				LoggingService.LogMessageToFile("Считывания списка лицензий CryptoProCsp: " + CRYPTOPRO_LICENSES);
-				string[] licenses = IniFile.ReadKeyValuePairs("main", CRYPTOPRO_LICENSES);
+				LoggingService.LogMessageToFile("Считывания списка лицензий CryptoProCsp: " + fileCryptoproLicenses);
+				string[] licenses = IniFile.ReadKeyValuePairs("main", fileCryptoproLicenses);
 				string licenseToUse = string.Empty;
 
 				foreach (string item in licenses) {
@@ -69,8 +69,8 @@ namespace FssAutoConfig {
 				key.SetValue("ProductID", licenseToUse);
 				LoggingService.LogMessageToFile("Ключ успешно записан в реестр");
 
-				if (!IniFile.WriteValue("main", licenseToUse, machineName, CRYPTOPRO_LICENSES))
-					LoggingService.LogMessageToFile("Не удалось обновить данные в файле: " + CRYPTOPRO_LICENSES);
+				if (!IniFile.WriteValue("main", licenseToUse, machineName, fileCryptoproLicenses))
+					LoggingService.LogMessageToFile("Не удалось обновить данные в файле: " + fileCryptoproLicenses);
 			} catch (Exception e) {
 				LoggingService.LogMessageToFile(e.Message + Environment.NewLine + e.StackTrace);
 			}

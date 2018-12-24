@@ -6,14 +6,14 @@ using System.Text;
 
 namespace FssAutoConfig {
 	public class SettingsReader {
-		private const string FILE_SETTINGS_GENERAL = @"\\mscs-fs-01\FSS_ARM_LPU\GeneralSettings.ini";
-		private const string FILE_SETTINGS_DEPARTMENTS = @"\\mscs-fs-01\FSS_ARM_LPU\DepartmentsSettings.ini";
-		private const string FILE_USER_CERTIFICATES = @"\\mscs-fs-01\FSS_ARM_LPU\UserCertificates.ini";
+		private readonly string fileSettingsGeneral = Path.Combine(Program.rootFolder, "GeneralSettings.ini");
+		private readonly string fileSettingsDepartments = Path.Combine(Program.rootFolder, "DepartmentsSettings.ini");
+		private readonly string fileUserCertificates = Path.Combine(Program.rootFolder, "UserCertificates.ini");
 
 		private const string SECTION_REQUISITES = "Настройка реквизитов организации";
 		private const string SECTION_FSS_SERVICES = "Настройка сервисов ФСС";
 		private const string SECTION_DB = "Настройка соединения с базой данных";
-		private const string SECTION_CERIFICATES = "Настройка подписи для сервисов";
+        private const string SECTION_CERIFICATES = "Настройка подписи для сервисов";
 
 		private const string KEY_REQUISITES_NAME = "Наименование МО";
 		private const string KEY_REQUISITES_FULLNAME = "Полное наименование МО";
@@ -98,61 +98,61 @@ namespace FssAutoConfig {
 
 
 		private void ReadGeneralSettins() {
-			if (!IsSettingsFileExist(FILE_SETTINGS_GENERAL))
+			if (!IsSettingsFileExist(fileSettingsGeneral))
 				return;
 
-			string[] requisites = IniFile.ReadSections(FILE_SETTINGS_GENERAL);
+			string[] requisites = IniFile.ReadSections(fileSettingsGeneral);
 			if (requisites == null) {
 				LoggingService.LogMessageToFile("Отсутствует секции с настройками");
 				return;
 			}
 				
 			if (requisites.Contains(SECTION_REQUISITES)) {
-				Settings["LPU_NAME"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_NAME, FILE_SETTINGS_GENERAL);
-				Settings["LPU_FULL_NAME"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_FULLNAME, FILE_SETTINGS_GENERAL);
-				Settings["LPU_ORGN"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_OGRN, FILE_SETTINGS_GENERAL);
-				Settings["LPU_OKPO"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_OKPO, FILE_SETTINGS_GENERAL);
+				Settings["LPU_NAME"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_NAME, fileSettingsGeneral);
+				Settings["LPU_FULL_NAME"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_FULLNAME, fileSettingsGeneral);
+				Settings["LPU_ORGN"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_OGRN, fileSettingsGeneral);
+				Settings["LPU_OKPO"] = IniFile.ReadValue(SECTION_REQUISITES, KEY_REQUISITES_OKPO, fileSettingsGeneral);
 			} else
 				LoggingService.LogMessageToFile("Отсутсвует секция: " + SECTION_REQUISITES);
 
 			if (requisites.Contains(SECTION_FSS_SERVICES)) {
-				Settings["wsurl"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_URL, FILE_SETTINGS_GENERAL);
-				Settings["wstimeout"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_TIMEOUT, FILE_SETTINGS_GENERAL);
-				Settings["netuseproxy"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_USEPROXY, FILE_SETTINGS_GENERAL);
-				Settings["netproxyhost"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYHOST, FILE_SETTINGS_GENERAL);
-				Settings["netproxyport"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYPORT, FILE_SETTINGS_GENERAL);
-				Settings["netuseproxyauth"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYAUTH, FILE_SETTINGS_GENERAL);
-				Settings["netproxyuser"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYUSER, FILE_SETTINGS_GENERAL);
-				Settings["netproxypassword"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYPASSWORD, FILE_SETTINGS_GENERAL);
+				Settings["wsurl"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_URL, fileSettingsGeneral);
+				Settings["wstimeout"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_TIMEOUT, fileSettingsGeneral);
+				Settings["netuseproxy"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_USEPROXY, fileSettingsGeneral);
+				Settings["netproxyhost"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYHOST, fileSettingsGeneral);
+				Settings["netproxyport"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYPORT, fileSettingsGeneral);
+				Settings["netuseproxyauth"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYAUTH, fileSettingsGeneral);
+				Settings["netproxyuser"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYUSER, fileSettingsGeneral);
+				Settings["netproxypassword"] = IniFile.ReadValue(SECTION_FSS_SERVICES, KEY_FSS_SERVICES_PROXYPASSWORD, fileSettingsGeneral);
 			} else
 				LoggingService.LogMessageToFile("Отсутсвует секция: " + SECTION_FSS_SERVICES);
 
 			if (requisites.Contains(SECTION_DB)) {
-				Settings["dbuser"] = IniFile.ReadValue(SECTION_DB, KEY_DB_USER, FILE_SETTINGS_GENERAL);
-				Settings["dbpassword"] = IniFile.ReadValue(SECTION_DB, KEY_DB_PASSWORD, FILE_SETTINGS_GENERAL);
+				Settings["dbuser"] = IniFile.ReadValue(SECTION_DB, KEY_DB_USER, fileSettingsGeneral);
+				Settings["dbpassword"] = IniFile.ReadValue(SECTION_DB, KEY_DB_PASSWORD, fileSettingsGeneral);
 			} else
 				LoggingService.LogMessageToFile("Отсутсвует секция: " + SECTION_DB);
 
 			if (requisites.Contains(SECTION_CERIFICATES)) {
-				Settings["performvalidation"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_PERFORMVALIDATION, FILE_SETTINGS_GENERAL);
-				Settings["signoutmessage"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_SIGNOUTMESSAGE, FILE_SETTINGS_GENERAL);
-				Settings["vefifyinmessage"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_VERIFYMESSAGE, FILE_SETTINGS_GENERAL);
-				Settings["hprov"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_HPROV, FILE_SETTINGS_GENERAL);
-				Settings["keywscontainer"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_KEYWSCONTAINER, FILE_SETTINGS_GENERAL);
-				Settings["encryptmessages"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_ENCRYPTMESSAGES, FILE_SETTINGS_GENERAL);
-				Settings["FSSkeywscontainer"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_FSSKEYWSCONTAINER, FILE_SETTINGS_GENERAL);
-				Settings["certfssname"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_CERTFSSNAME, FILE_SETTINGS_GENERAL);
+				Settings["performvalidation"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_PERFORMVALIDATION, fileSettingsGeneral);
+				Settings["signoutmessage"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_SIGNOUTMESSAGE, fileSettingsGeneral);
+				Settings["vefifyinmessage"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_VERIFYMESSAGE, fileSettingsGeneral);
+				Settings["hprov"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_HPROV, fileSettingsGeneral);
+				Settings["keywscontainer"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_KEYWSCONTAINER, fileSettingsGeneral);
+				Settings["encryptmessages"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_ENCRYPTMESSAGES, fileSettingsGeneral);
+				Settings["FSSkeywscontainer"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_FSSKEYWSCONTAINER, fileSettingsGeneral);
+				Settings["certfssname"] = IniFile.ReadValue(SECTION_CERIFICATES, KEY_CERIFICATES_CERTFSSNAME, fileSettingsGeneral);
 			} else
 				LoggingService.LogMessageToFile("Отсутсвует секция: " + SECTION_CERIFICATES);
 		}
 
 		private void ReadDepartmentSettings() {
-			if (!IsSettingsFileExist(FILE_SETTINGS_DEPARTMENTS))
+			if (!IsSettingsFileExist(fileSettingsDepartments))
 				return;
 
-			string[] sectionNames = IniFile.ReadSections(FILE_SETTINGS_DEPARTMENTS);
+			string[] sectionNames = IniFile.ReadSections(fileSettingsDepartments);
 			if (sectionNames == null) {
-				LoggingService.LogMessageToFile("В файле настроек " + FILE_SETTINGS_GENERAL + " отсутсвуют секции с подразделениями");
+				LoggingService.LogMessageToFile("В файле настроек " + fileSettingsGeneral + " отсутсвуют секции с подразделениями");
 				return;
 			}
 
@@ -163,8 +163,8 @@ namespace FssAutoConfig {
 				if (machineDN.Contains(sectionName)) {
 					isPresentInSettings = true;
 					
-					Settings["LPU_ADDRESS"] = IniFile.ReadValue(sectionName, KEY_REQUISITES_ADDRESS, FILE_SETTINGS_DEPARTMENTS);
-					Settings["dburl"] = IniFile.ReadValue(sectionName, KEY_DB_URL, FILE_SETTINGS_DEPARTMENTS);
+					Settings["LPU_ADDRESS"] = IniFile.ReadValue(sectionName, KEY_REQUISITES_ADDRESS, fileSettingsDepartments);
+					Settings["dburl"] = IniFile.ReadValue(sectionName, KEY_DB_URL, fileSettingsDepartments);
 
 					break;
 				}
@@ -175,15 +175,15 @@ namespace FssAutoConfig {
 		}
 
 		private void ReadUserCertificate() {
-			if (!IsSettingsFileExist(FILE_USER_CERTIFICATES))
+			if (!IsSettingsFileExist(fileUserCertificates))
 				return;
 
-			string userCertificate = IniFile.ReadValue("Main", Environment.UserName, FILE_USER_CERTIFICATES);
+			string userCertificate = IniFile.ReadValue("Main", Environment.UserName, fileUserCertificates);
 			if (string.IsNullOrEmpty(userCertificate)) {
 				LoggingService.LogMessageToFile(
 					"Не удалось найти сертификат для пользователя '" + 
 					Environment.UserName + 
-					"' в файле: " + FILE_USER_CERTIFICATES);
+					"' в файле: " + fileUserCertificates);
 				return;
 			}
 
@@ -192,7 +192,7 @@ namespace FssAutoConfig {
 
 		private bool IsSettingsFileExist(string file) {
 			LoggingService.LogMessageToFile("Считывание параметров из файла настроек: " + file);
-			if (!File.Exists(FILE_SETTINGS_GENERAL)) {
+			if (!File.Exists(fileSettingsGeneral)) {
 				LoggingService.LogMessageToFile("Отсутствует файл с настройками: " + file);
 				return false;
 			}
