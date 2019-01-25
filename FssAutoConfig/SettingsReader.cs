@@ -8,7 +8,8 @@ namespace FssAutoConfig {
 	public class SettingsReader {
 		private readonly string fileSettingsGeneral = Path.Combine(Program.rootFolder, "GeneralSettings.ini");
 		private readonly string fileSettingsDepartments = Path.Combine(Program.rootFolder, "DepartmentsSettings.ini");
-		private readonly string fileUserCertificates = Path.Combine(Program.rootFolder, "UserCertificates.ini");
+		private readonly string fileSettingsOrganizationUnitsSettings = Path.Combine(Program.rootFolder, "OrganizationUnitsSettings.ini");
+        private readonly string fileUserCertificates = Path.Combine(Program.rootFolder, "UserCertificates.ini");
 
 		private const string SECTION_REQUISITES = "Настройка реквизитов организации";
 		private const string SECTION_FSS_SERVICES = "Настройка сервисов ФСС";
@@ -39,7 +40,7 @@ namespace FssAutoConfig {
 		private const string KEY_CERIFICATES_VERIFYMESSAGE = "Проверять подпись на входящих сообщениях";
 		private const string KEY_CERIFICATES_HPROV = "Криптопровайдер";
 		private const string KEY_CERIFICATES_KEYWSCONTAINER = "Тип контейнера личный";
-		private const string KEY_CERIFICATES_CERTWSNAME = "Имя сертификата МО";
+		//private const string KEY_CERIFICATES_CERTWSNAME = "Имя сертификата МО"; //Replaced by UserCertificates.ini
 		private const string KEY_CERIFICATES_ENCRYPTMESSAGES = "Шифровать сообщение";
 		private const string KEY_CERIFICATES_FSSKEYWSCONTAINER = "Тип контейнера фсс";
 		private const string KEY_CERIFICATES_CERTFSSNAME = "Имя сертификата ФСС";
@@ -55,8 +56,8 @@ namespace FssAutoConfig {
 			LoggingService.LogMessageToFile("Отображаемое имя: " + userDisplayName);
 			LoggingService.LogMessageToFile("Адрес электронной почты: " + userMail);
 			LoggingService.LogMessageToFile("Номер телефона: " + userPhoneNumber);
-			
-			Settings = new Dictionary<string, string> {
+
+            Settings = new Dictionary<string, string> {
 				{ "AUTHOR", userDisplayName },
 				{ "AUTHOR_EMAIL", userMail },
 				{ "AUTHOR_PHONE", userPhoneNumber },
@@ -95,7 +96,6 @@ namespace FssAutoConfig {
 			foreach (KeyValuePair<string, string> pair in Settings)
 				LoggingService.LogMessageToFile(pair.Key + "=" + pair.Value);
 		}
-
 
 		private void ReadGeneralSettins() {
 			if (!IsSettingsFileExist(fileSettingsGeneral))
@@ -147,28 +147,40 @@ namespace FssAutoConfig {
 		}
 
 		private void ReadDepartmentSettings() {
-			if (!IsSettingsFileExist(fileSettingsDepartments))
+			if (!IsSettingsFileExist(fileSettingsDepartments) ||
+                !IsSettingsFileExist(fileSettingsOrganizationUnitsSettings))
 				return;
 
-			string[] sectionNames = IniFile.ReadSections(fileSettingsDepartments);
-			if (sectionNames == null) {
-				LoggingService.LogMessageToFile("В файле настроек " + fileSettingsGeneral + " отсутсвуют секции с подразделениями");
-				return;
-			}
+            string machineDN = DirectoryService.ReadMachineDistinguishName();
+            bool isPresentInSettings = false;
 
-			string machineDN = DirectoryService.ReadMachineDistinguishName();
-			bool isPresentInSettings = false;
+            string[] sectionNamesOU = IniFile.ReadSections(fileSettingsOrganizationUnitsSettings);
+            if (sectionNamesOU != null) {
+                foreach (string sectionName in sectionNamesOU) {
+                    if (machineDN.EndsWith(sectionName)) {
+                        isPresentInSettings = true;
 
-			foreach (string sectionName in sectionNames) {
-				if (machineDN.Contains(sectionName)) {
-					isPresentInSettings = true;
-					
-					Settings["LPU_ADDRESS"] = IniFile.ReadValue(sectionName, KEY_REQUISITES_ADDRESS, fileSettingsDepartments);
-					Settings["dburl"] = IniFile.ReadValue(sectionName, KEY_DB_URL, fileSettingsDepartments);
+                        Settings["LPU_ADDRESS"] = IniFile.ReadValue(sectionName, KEY_REQUISITES_ADDRESS, fileSettingsOrganizationUnitsSettings);
+                        Settings["dburl"] = IniFile.ReadValue(sectionName, KEY_DB_URL, fileSettingsOrganizationUnitsSettings);
 
-					break;
-				}
-			}
+                        break;
+                    }
+                }
+            }
+
+			string[] sectionNamesDepts = IniFile.ReadSections(fileSettingsDepartments);
+			if (sectionNamesDepts != null && !isPresentInSettings) {
+                foreach (string sectionName in sectionNamesDepts) {
+                    if (machineDN.Contains(sectionName)) {
+                        isPresentInSettings = true;
+
+                        Settings["LPU_ADDRESS"] = IniFile.ReadValue(sectionName, KEY_REQUISITES_ADDRESS, fileSettingsDepartments);
+                        Settings["dburl"] = IniFile.ReadValue(sectionName, KEY_DB_URL, fileSettingsDepartments);
+
+                        break;
+                    }
+                }
+            }
 
 			if (!isPresentInSettings)
 				LoggingService.LogMessageToFile("Не удалось найти секцию с именем филиала для ПК: " + machineDN);

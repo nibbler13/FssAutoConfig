@@ -47,7 +47,7 @@ namespace FssAutoConfig {
 					return sections;
 				}
 
-				capacity = capacity * 2;
+				capacity *= 2;
 			}
 		}
 

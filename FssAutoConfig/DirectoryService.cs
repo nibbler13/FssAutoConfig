@@ -15,7 +15,7 @@ namespace FssAutoConfig {
 			userPhoneNumber = string.Empty;
 
 			try {
-				using (DirectoryEntry user = GetDirectoryEntry(Environment.UserName)) {
+                using (DirectoryEntry user = GetDirectoryEntry(Environment.UserName)) {
 					userDisplayName = user.Properties["displayName"].Value.ToString();
 					userMail = user.Properties["mail"].Value.ToString();
 					userPhoneNumber = user.Properties["mobile"].Value.ToString();
@@ -56,8 +56,8 @@ namespace FssAutoConfig {
 
 		private static DirectoryEntry GetDirectoryEntry(string sAMAccountName) {
 			using (DirectorySearcher dsSearcher = new DirectorySearcher()) {
-				dsSearcher.Filter = "sAMAccountName=" + sAMAccountName;
-				SearchResult searchResult = dsSearcher.FindOne();
+                dsSearcher.Filter = "sAMAccountName=" + sAMAccountName;
+                SearchResult searchResult = dsSearcher.FindOne();
 				return new DirectoryEntry(searchResult.Path);
 			}
 		}
