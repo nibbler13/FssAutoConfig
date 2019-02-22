@@ -39,6 +39,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -55,6 +56,7 @@
     <Compile Include="DirectoryService.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="LoggingService.cs" />
+    <Compile Include="Mail.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsReader.cs" />

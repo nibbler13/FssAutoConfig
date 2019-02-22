@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace FssAutoConfig {
 		private readonly string fileSettingsGeneral = Path.Combine(Program.rootFolder, "GeneralSettings.ini");
 		private readonly string fileSettingsDepartments = Path.Combine(Program.rootFolder, "DepartmentsSettings.ini");
 		private readonly string fileSettingsOrganizationUnitsSettings = Path.Combine(Program.rootFolder, "OrganizationUnitsSettings.ini");
-        private readonly string fileUserCertificates = Path.Combine(Program.rootFolder, "UserCertificates.ini");
+        private readonly string fileUserCertificatesINI = Path.Combine(Program.rootFolder, "UserCertificates.ini");
+		private readonly string fileUserCertificatesKontur = Path.Combine(Program.rootFolder, "rc1000193-all.csv");
 
 		private const string SECTION_REQUISITES = "Настройка реквизитов организации";
 		private const string SECTION_FSS_SERVICES = "Настройка сервисов ФСС";
@@ -90,7 +92,7 @@ namespace FssAutoConfig {
 
 			ReadGeneralSettins();
 			ReadDepartmentSettings();
-			ReadUserCertificate();
+			ReadUserCertificate(userDisplayName);
 
 			LoggingService.LogMessageToFile("Считанные настройки: ");
 			foreach (KeyValuePair<string, string> pair in Settings)
@@ -186,20 +188,71 @@ namespace FssAutoConfig {
 				LoggingService.LogMessageToFile("Не удалось найти секцию с именем филиала для ПК: " + machineDN);
 		}
 
-		private void ReadUserCertificate() {
-			if (!IsSettingsFileExist(fileUserCertificates))
-				return;
+		private void ReadUserCertificate(string userName) {
+			string userCertificate = string.Empty;
 
-			string userCertificate = IniFile.ReadValue("Main", Environment.UserName, fileUserCertificates);
+			if (IsSettingsFileExist(fileUserCertificatesINI))
+				userCertificate = IniFile.ReadValue("Main", Environment.UserName, fileUserCertificatesINI);
+
+			if (string.IsNullOrEmpty(userCertificate) && 
+				IsSettingsFileExist(fileUserCertificatesKontur)) {
+				try {
+					using (TextFieldParser csvParser = new TextFieldParser(fileUserCertificatesKontur, Encoding.GetEncoding("windows-1251"))) {
+						csvParser.CommentTokens = new string[] { "#" };
+						csvParser.SetDelimiters(new string[] { ";" });
+						csvParser.HasFieldsEnclosedInQuotes = true;
+						csvParser.ReadLine();
+
+						DateTime validTo = new DateTime();
+
+						while (!csvParser.EndOfData) {
+							string[] fields = csvParser.ReadFields();
+							if (fields.Length < 14)
+								continue;
+
+							string lineUserName = fields[3];
+							if (!ClearString(lineUserName).Equals(ClearString(userName)))
+								continue;
+
+							string isRevoked = fields[10];
+							if (isRevoked.Equals("1"))
+								continue;
+
+							string lineCertificateSN = fields[6];
+							DateTime lineValidTo = DateTime.Parse(fields[9]);
+							if (string.IsNullOrEmpty(userCertificate)) {
+								userCertificate = lineCertificateSN;
+								validTo = lineValidTo;
+								continue;
+							}
+
+							if (lineValidTo <= validTo)
+								continue;
+
+							userCertificate = lineCertificateSN;
+							validTo = lineValidTo;
+						}
+					}
+				} catch (Exception e) {
+					LoggingService.LogMessageToFile(e.Message + Environment.NewLine + e.StackTrace);
+				}
+			}
+
 			if (string.IsNullOrEmpty(userCertificate)) {
-				LoggingService.LogMessageToFile(
-					"Не удалось найти сертификат для пользователя '" + 
-					Environment.UserName + 
-					"' в файле: " + fileUserCertificates);
+				string message = "Не удалось найти сертификат для пользователя '" +
+					Environment.UserName + "@" + Environment.MachineName + 
+					"' в файлах: " + fileUserCertificatesINI +
+					", " + fileUserCertificatesKontur;
+				LoggingService.LogMessageToFile(message);
+				SystemMail.SendMail("FssAutoConfig", message);
 				return;
 			}
 
 			Settings["certwsname"] = userCertificate;
+		}
+
+		private static string ClearString(string text) {
+			return text.ToLower().TrimStart(' ').TrimEnd(' ').Replace("  ", " ");
 		}
 
 		private bool IsSettingsFileExist(string file) {
